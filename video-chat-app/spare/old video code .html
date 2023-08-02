@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body onload="init();">
+	<h1>Take a snapshot of the current video stream</h1>Click on the Start WebCam button.
+	<p>
+		<button onclick="startWebcam();">Start WebCam</button>
+		<!-- <button onclick="stopWebcam();">Stop WebCam</button> -->
+		<button onclick="snapshot();">Take Snapshot</button>
+	</p>
+	<video onclick="snapshot(this);" width="100%" height="auto" id="video" autoplay></video>
+	<p>Screenshots:
+		<p>
+			<canvas id="myCanvas"></canvas>
+</body>
+<script>
+	//--------------------
+      // GET USER MEDIA CODE
+      //--------------------
+      navigator.getUserMedia = ( navigator.getUserMedia ||
+                                 navigator.webkitGetUserMedia ||
+                                 navigator.mozGetUserMedia ||
+                                 navigator.msGetUserMedia
+                               );
+
+      var video;
+      var webcamStream;
+      var mediaSource = new MediaSource();
+
+      function startWebcam() {
+        if (navigator.getUserMedia) {
+           navigator.getUserMedia (
+
+              // constraints
+              {
+                 video: true,
+                 audio: false
+              },
+
+              // successCallback
+              function(localMediaStream) {
+                video = document.querySelector('video');
+                try {
+                  video.srcObject = localMediaStream;
+                  webcamStream = localMediaStream;
+                } catch (error) {
+                  video.src = URL.createObjectURL(localMediaStream);
+                  webcamStream = localMediaStream;
+                }
+                // video.src = window.URL.createObjectURL(localMediaStream);
+              },
+
+              // errorCallback
+              function(err) {
+                 alert("The following error occured: " + err);
+              }
+           );
+        } else {
+          alert("getUserMedia not supported");
+        }  
+      }
+
+      function stopWebcam() {
+          webcamStream.stop();
+      }
+      //---------------------
+      // TAKE A SNAPSHOT CODE
+      //---------------------
+      var canvas, ctx;
+
+      function init() {
+        // Get the canvas and obtain a context for
+        // drawing in it
+        canvas = document.getElementById("myCanvas");
+        video = document.getElementById("video");
+        canvas.width = video.getBoundingClientRect().width;
+        canvas.height = video.getBoundingClientRect().height + 23;
+        ctx = canvas.getContext('2d');
+      }
+
+      function snapshot() {
+         // Draws current image from the video element into the canvas
+        ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+      }
+</script>
+
+</html>
