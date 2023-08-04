@@ -22,27 +22,29 @@ connection.once('open', () => {
 });
 
 // Define the Mongoose schema and model
-const signUpSchema = new mongoose.Schema({
+const userData = new mongoose.Schema({
   name: String,
   email: String,
-  password: String
+  password: String,
+  meetingNmae: String,
+  participantNames: [String] 
 });
 
-const SignUpModel = mongoose.model('SignUp', signUpSchema);
+const userDataModel = mongoose.model('UserData', userData);
 
 app.post('/getsignupdetails', async (req, res) => {
     const { email } = req.body; // Ensure the 'password' field is in the request body
   console.log("YO",req.body['name'])
   console.log("YOoooooooo",typeof(req.body['name']))
 
-  const _user = await SignUpModel.findOne( {email} ); // Find the user by both email and password
+  const _user = await userDataModel.findOne( {email} ); // Find the user by both email and password
   console.log("USER", _user);
   if (_user) {
     console.log("USER ALREADY EXISTS")
     // res.status(401).json({ message: "User already exists" });
   }
   else{
-    const newSignupData = new SignUpModel({
+    const newSignupData = new userDataModel({
         name:req.body['name'],
         email:req.body['email'],
         password:req.body['password'],
@@ -62,7 +64,7 @@ app.post('/getsignupdetails', async (req, res) => {
 app.post('/getlogindetails', async (req, res) => {
     const { email, password } = req.body; // Ensure the 'password' field is in the request body
     try {
-        const user = await SignUpModel.findOne({ email, password }); // Find the user by both email and password
+        const user = await userDataModel.findOne({ email, password }); // Find the user by both email and password
         if (user) {
             console.log("User exists!");
             // Do something if the user exists
@@ -78,6 +80,47 @@ app.post('/getlogindetails', async (req, res) => {
         console.log(err);
         res.status(500).json({ message: "Internal server error" });
     }
+});
+
+
+
+app.post('/updateParticipantName', async (req, res) => {
+  console.log("UPDATE PARTICIPANT WORKS");
+  const { participantNames, name } = req.body;
+  console.log("Participant Name",participantNames)
+  console.log("Name",name)
+  try {
+    // Find the user document by the user ID
+    const user = await userDataModel.findOne({ name: name });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the participantNames array for the user
+    user.participantNames.push(participantNames);
+    await user.save();
+
+    // Respond with the updated user data (optional)
+    res.status(200).json({ message: 'Participant name added successfully', user });
+  } catch (error) {
+    console.error('Error occurred while updating participant name:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+app.get('/api/names', async (req, res) => {
+  console.log("yes")
+  const names = await userDataModel.find({}, 'name');
+  // console.log(names)
+try {
+  const names = await userDataModel.find({}, 'name');
+  res.json(names);
+} catch (error) {
+  console.error('Error fetching names:', error);
+  res.status(500).json({ error: 'Internal server error' });
+}
 });
 
 
