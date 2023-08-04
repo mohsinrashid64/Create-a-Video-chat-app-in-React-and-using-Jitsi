@@ -123,26 +123,7 @@ function Form() {
     setShowForm(true);
   };
 
-  const handleAPI = async (api) => {
-    api.addEventListener("videoConferenceJoined", async () => {
-      // let data = {num :  await api.getNumberOfParticipants()} 
-      // await axios.post('/api/set-number-of-participants', data)
-      console.log("ROOMS INFO",api.getRoomsInfo())
-    });
-    let check = true
-    api.addEventListener('videoConferenceLeft',  function ()  {
-      if ( check === true){
-        console.log("ROOMS INFO",api.getRoomsInfo())
 
-        let data = {num :  api.getNumberOfParticipants() * -1} 
-        console.log("PARTICIPANT LEFT",data)
-        // axios.post('/api/decrease-number-of-participants',data)
-        check =false
-        setCallIsActive(false);
-
-      }
-    })  
-  };
 
 
   return (
