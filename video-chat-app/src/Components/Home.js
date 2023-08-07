@@ -2,15 +2,18 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import Jitsi from "react-jitsi";
+import { useLocation } from 'react-router';
 
 import Form from "./SubComponents/Form"
 
-function App() {
+function App () {
+
 
   const [callIsActive, setCallIsActive] = useState(false);
 
 
-
+  const location = useLocation();
+  const _username = location.state?._username || '';
 
 
 
@@ -44,7 +47,9 @@ function App() {
 
 
   return (
+    
     <div>
+      <h1>Welcome {_username}</h1>
       <Form />
       {callIsActive ? (
         <div>

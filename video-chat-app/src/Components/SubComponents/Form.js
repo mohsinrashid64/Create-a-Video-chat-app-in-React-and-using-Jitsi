@@ -1,24 +1,22 @@
-import '../../App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
 
 function Form() {
   const [showForm, setShowForm] = useState(false);
   const [meetingName, setMeetingName] = useState('');
   const [userName, setUserName] = useState('');
   const [meetingDate, setMeetingDate] = useState('');
+  const [meetingTime, setMeetingTime] = useState('');
   const [participant, setParticipant] = useState('');
   const [participants, setParticipants] = useState([]);
+
   const [meetings, setMeetings] = useState([]);
   const [editedMeetingIndex, setEditedMeetingIndex] = useState(null);
   const [callIsActive, setCallIsActive] = useState(false);
   const [names, setNames] = useState([]);
   const [selectedName, setSelectedName] = useState('');
 
-
-//////////
+  // Fetch names from the server
   const fetchNames = () => {
     axios
       .get('http://localhost:5000/api/names')
@@ -33,7 +31,6 @@ function Form() {
   useEffect(() => {
     fetchNames();
   }, []);
-///////////
 
   const toggleForm = () => {
     setShowForm(!showForm);
@@ -52,6 +49,10 @@ function Form() {
     setMeetingDate(event.target.value);
   };
 
+  const handleMeetingTimeChange = (event) => {
+    setMeetingTime(event.target.value);
+  };
+
   const handleParticipantChange = (event) => {
     setParticipant(event.target.value);
   };
@@ -64,12 +65,12 @@ function Form() {
 
     try {
       // Send the participant name and user ID to the server
-      const response = await axios.post('http://localhost:5000/updateParticipantName', {
-        participantNames: participant,
-        name: 'Mohsin' // Replace this with the user ID obtained during login
-      });
+    //   const response = await axios.post('http://localhost:5000/updateParticipantName', {
+    //     participantNames: participant,
+    //     name: 'Mohsin', // Replace this with the user ID obtained during login
+    //   });
 
-      console.log('Participant name added successfully:', response.data);
+    //   console.log('Participant name added successfully:', response.data);
       // Handle any success behavior here
     } catch (error) {
       console.error('Error occurred while adding participant name:', error);
@@ -80,7 +81,7 @@ function Form() {
   };
 
   const handleAddMeeting = () => {
-    if (!meetingName || !userName || !meetingDate || participants.length === 0) {
+    if (!meetingName || !userName || !meetingDate || !meetingTime || participants.length === 0) {
       alert('Please fill in all the details and add at least one participant before adding a meeting.');
       return;
     }
@@ -88,7 +89,7 @@ function Form() {
     const newMeeting = {
       meetingName,
       userName,
-      meetingDate,
+      meetingDate: meetingDate + ' ' + meetingTime, // Combine the date and time values
       participants,
     };
 
@@ -102,9 +103,22 @@ function Form() {
       setMeetings([...meetings, newMeeting]);
     }
 
+    axios
+    .post('http://localhost:5000/api/addMeeting', newMeeting)
+    .then((response) => {
+      console.log('Server response:', response.data);
+      // Optionally, you can set the server response in the state if needed:
+      // setServerResponse(response.data);
+    })
+    .catch((error) => {
+      console.error('Error sending meeting data to the server:', error);
+      // Handle any error behavior here
+    });
+
     setMeetingName('');
     setUserName('');
     setMeetingDate('');
+    setMeetingTime(''); // Reset the time input field
     setParticipants([]);
     setEditedMeetingIndex(null); // Reset the edited meeting index after adding/editing a meeting
   };
@@ -125,9 +139,9 @@ function Form() {
   };
 
   const handleSelectChange = (event) => {
-    console.log("handleSelectChange")
     setSelectedName(event.target.value);
   };
+
   const handleLogSelectedName = () => {
     console.log('Selected Name:', selectedName);
   };
@@ -170,28 +184,37 @@ function Form() {
             />
           </div>
           <div className="form-group">
+            <label htmlFor="meetingTime">Time of Meeting:</label>
+            <input
+              type="time"
+              className="form-control"
+              id="meetingTime"
+              value={meetingTime}
+              onChange={handleMeetingTimeChange}
+            />
+          </div>
+          <div className="form-group">
             <div className="input-group mb-3">
-
               {names.length > 0 ? (
-              <div>
-
-
-                <label>
+                <div>
+                  <label>
                     Select a name:
                     <select onChange={handleParticipantChange}>
-                    <option value="">Select a name</option>
-                    {names.map((name) => (
+                      <option value="">Select a name</option>
+                      {names.map((name) => (
                         <option key={name._id} value={name.name}>
-                        {name.name}
+                          {name.name}
                         </option>
-                    ))}
+                      ))}
                     </select>
-                </label>
-                <button type='button' onClick={handleLogSelectedName}>Log Selected Name</button>
-              </div>
-            ) : (
-              <p>No names to display. Click the button to fetch names.</p>
-            )}
+                  </label>
+                  <button type="button" onClick={handleLogSelectedName}>
+                    Log Selected Name
+                  </button>
+                </div>
+              ) : (
+                <p>No names to display. Click the button to fetch names.</p>
+              )}
               <div className="input-group-append">
                 <button className="btn btn-primary" type="button" onClick={handleAddParticipant}>
                   Add Participant
@@ -237,10 +260,7 @@ function Form() {
                     </button>
                   </td>
                   <td>
-                    <button
-                      className="btn btn-info"
-                      onClick={() => handleEditMeeting(index)}
-                    >
+                    <button className="btn btn-info" onClick={() => handleEditMeeting(index)}>
                       Edit
                     </button>
                   </td>
@@ -250,17 +270,8 @@ function Form() {
           </table>
         </div>
       )}
-
     </div>
   );
 }
 
 export default Form;
-
-// <div className="App">
-//   {   condition === 'A' ? <ComponentA /> 
-//     : condition === 'B' ? <ComponentB />
-//     : condition === 'C' ? <ComponentC />
-//     : <DefaultComponent />
-//   }
-// </div>

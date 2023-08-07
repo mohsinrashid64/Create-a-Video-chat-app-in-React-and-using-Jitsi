@@ -28,8 +28,11 @@ export default function Login() {
 
       if (response.status === 200) {
         console.log('User exists!');
+        console.log(response.data.name);
         // Redirect to the home page
-        navigate('/home');
+        navigate('/home', { state: { _username: response.data.name } });
+
+        // navigate('/home');
       } else {
         console.log('User does not exist!');
       }
