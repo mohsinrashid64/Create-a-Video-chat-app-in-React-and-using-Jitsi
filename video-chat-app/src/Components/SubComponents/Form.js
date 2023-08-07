@@ -15,6 +15,7 @@ function Form() {
   const [editedMeetingIndex, setEditedMeetingIndex] = useState(null);
   const [callIsActive, setCallIsActive] = useState(false);
   const [names, setNames] = useState([]);
+  const [selectedName, setSelectedName] = useState('');
 
 
 //////////
@@ -123,8 +124,13 @@ function Form() {
     setShowForm(true);
   };
 
-
-
+  const handleSelectChange = (event) => {
+    console.log("handleSelectChange")
+    setSelectedName(event.target.value);
+  };
+  const handleLogSelectedName = () => {
+    console.log('Selected Name:', selectedName);
+  };
 
   return (
     <div className="container d-flex flex-column align-items-center justify-content-center vh-100">
@@ -164,34 +170,24 @@ function Form() {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="participant">Participants:</label>
             <div className="input-group mb-3">
-              <input
-                type="text"
-                className="form-control"
-                id="participant"
-                value={participant}
-                onChange={handleParticipantChange}
-              />
+
               {names.length > 0 ? (
               <div>
-                <h2>List of Names:</h2>
-                <ul>
-                  {names.map((name) => (
-                    <li key={name._id}>{name.name}</li>
-                  ))}
-                </ul>
+
+
                 <label>
-                  Select a name:
-                  <select>
+                    Select a name:
+                    <select onChange={handleParticipantChange}>
                     <option value="">Select a name</option>
                     {names.map((name) => (
-                      <option key={name._id} value={name.name}>
+                        <option key={name._id} value={name.name}>
                         {name.name}
-                      </option>
+                        </option>
                     ))}
-                  </select>
+                    </select>
                 </label>
+                <button type='button' onClick={handleLogSelectedName}>Log Selected Name</button>
               </div>
             ) : (
               <p>No names to display. Click the button to fetch names.</p>
