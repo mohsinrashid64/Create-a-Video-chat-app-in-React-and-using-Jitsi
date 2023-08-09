@@ -24,7 +24,7 @@ export default function Signup() {
     setErrors(validationErrors);
 
     try {
-      let response = await axios.post('http://localhost:5000/getsignupdetails', values, {
+      let response = await axios.post('http://172.16.2.117:5000/getsignupdetails', values, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -38,12 +38,15 @@ export default function Signup() {
     }
   };
   return (
-    <div className="container">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
+    <div className="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+      <div className="card shadow">
+        <div className="card-body">
+          <h2 className="card-title text-center mb-4">Sign Up</h2>
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="name">Name</label>
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label">
+                Name
+              </label>
               <input
                 type="text"
                 className={`form-control ${errors.name ? 'is-invalid' : ''}`}
@@ -55,8 +58,10 @@ export default function Signup() {
               />
               {errors.name && <span className="invalid-feedback">{errors.name}</span>}
             </div>
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
               <input
                 type="email"
                 className={`form-control ${errors.email ? 'is-invalid' : ''}`}
@@ -68,8 +73,10 @@ export default function Signup() {
               />
               {errors.email && <span className="invalid-feedback">{errors.email}</span>}
             </div>
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
               <input
                 type="password"
                 className={`form-control ${errors.password ? 'is-invalid' : ''}`}
@@ -81,9 +88,13 @@ export default function Signup() {
               />
               {errors.password && <span className="invalid-feedback">{errors.password}</span>}
             </div>
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary btn-block">
               Sign Up
             </button>
+            <div className="text-center mt-3">
+              <p className="mb-0">Already have an account?</p>
+              {/* Add a link to the login page here */}
+            </div>
           </form>
         </div>
       </div>

@@ -20,7 +20,7 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/getlogindetails', values, {
+      const response = await axios.post('http://172.16.2.117:5000/getlogindetails', values, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -29,10 +29,8 @@ export default function Login() {
       if (response.status === 200) {
         console.log('User exists!');
         console.log(response.data.name);
-        // Redirect to the home page
-        navigate('/home', { state: { _username: response.data.name } });
+        navigate('/home', { state: { _username: response.data.name, _email: values.email } });
 
-        // navigate('/home');
       } else {
         console.log('User does not exist!');
       }
@@ -42,12 +40,15 @@ export default function Login() {
   };
 
   return (
-    <div className="container">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
+    <div className="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+      <div className="card shadow">
+        <div className="card-body">
+          <h2 className="card-title text-center mb-4">Log In</h2>
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
               <input
                 type="email"
                 className="form-control"
@@ -58,8 +59,10 @@ export default function Login() {
                 value={values.email}
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
               <input
                 type="password"
                 className="form-control"
@@ -70,15 +73,20 @@ export default function Login() {
                 value={values.password}
               />
             </div>
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary btn-block">
               Log in
             </button>
-            <Link to="/signup" className="btn btn-link ml-2">
-              Create Account
-            </Link>
+            <div className="text-center mt-3">
+              <p className="mb-0">Don't have an account?</p>
+              <Link to="/signup" className="btn btn-link">
+                Create Account
+              </Link>
+            </div>
           </form>
         </div>
       </div>
     </div>
   );
 }
+
+
