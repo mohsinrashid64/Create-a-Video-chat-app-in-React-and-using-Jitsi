@@ -230,7 +230,7 @@ function App () {
         <div className="mt-4">
           <Jitsi
             roomName={selectedRoomName}
-            displayName={userName}
+            displayName={_name}
             onAPILoad={handleAPI}
             containerStyle={{ width: '1000px', height: '750px' }}
             config={{
