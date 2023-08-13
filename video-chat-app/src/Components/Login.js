@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Input from './Input';
 
 export default function Login() {
   const [values, setValues] = useState({
@@ -12,7 +13,7 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const handleInput = (event) => {
+  const onChange = (event) => {
     setValues((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
@@ -20,7 +21,8 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://172.16.2.117:5000/getlogindetails', values, {
+      console.log("Login button try Part")
+      const response = await axios.post('/getlogindetails', values, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -29,7 +31,7 @@ export default function Login() {
       if (response.status === 200) {
         console.log('User exists!');
         console.log(response.data.name);
-        navigate('/home', { state: { _username: response.data.name, _email: values.email } });
+        navigate('/home', { state: { _name: response.data.name, _email: values.email } });
 
       } else {
         console.log('User does not exist!');
@@ -45,35 +47,27 @@ export default function Login() {
         <div className="card-body">
           <h2 className="card-title text-center mb-4">Log In</h2>
           <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">
-                Email
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                placeholder="Enter Email"
-                onChange={handleInput}
-                name="email"
-                value={values.email}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <input
-                type="password"
-                className="form-control"
-                id="password"
-                placeholder="Enter Password"
-                onChange={handleInput}
-                name="password"
-                value={values.password}
-              />
-            </div>
-            <button type="submit" className="btn btn-primary btn-block">
+            <Input
+              label="Email"
+              type="email"
+              className="form-control"
+              id="email"
+              name="email" // Specify the name attribute
+              value={values.email}
+              onChange={onChange}
+            />
+            <br/>
+            <Input
+              label="Password"
+              type="password"
+              className="form-control mb-6"
+              id="password"
+              name="password" // Specify the name attribute
+              value={values.password}
+              onChange={onChange}
+            />
+            <br/>
+            <button type="submit" className="btn btn-primary btn-block mt-6 w-100">
               Log in
             </button>
             <div className="text-center mt-3">
@@ -88,5 +82,3 @@ export default function Login() {
     </div>
   );
 }
-
-

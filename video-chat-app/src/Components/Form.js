@@ -1,10 +1,16 @@
 import React from 'react';
 import Input from './Input';
 
-function Form2(props) {
+function Form(props) {
   return (
     <div className="container d-flex flex-column align-items-center justify-content-center vh-100">
       <div className="card p-4 shadow">
+      <button
+            className="btn btn-primary mb-3"
+            onClick={() => props.setShowForm(false)}
+          >
+            <span className="arrow-back">&lt;</span> Back to List
+          </button>
         <h2 className="mb-4">Create a New Meeting</h2>
         <form>
           <Input
@@ -40,7 +46,7 @@ function Form2(props) {
           />
 
           <div className="form-group">
-            <label htmlFor="participantSelect">Select a name:</label>
+            <label htmlFor="participantSelect">Select Participants:</label>
             <div className="d-flex">
               {props.names.length > 0 ? (
                 <select
@@ -65,7 +71,8 @@ function Form2(props) {
           </div>
 
           <button type="button" className="btn btn-primary mt-3" onClick={props.handleAddMeeting}>
-            {props.editedMeetingIndex !== null ? 'Save Changes' : 'Add Meeting'}
+            {/* {props.editedMeetingIndex !== null ? 'Save Changes' : 'Add Meeting'} */}
+            Add Meeting
           </button>
         </form>
       </div>
@@ -73,4 +80,4 @@ function Form2(props) {
   );
 }
 
-export default Form2;
+export default Form;

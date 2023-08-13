@@ -97,53 +97,6 @@ app.get('/api/names', async (req, res) => {
 
 
 
-// app.post('/api/addMeeting', async (req, res) => {
-//   console.log(req.body)
-//   req.body
-// });
-
-/*app.post('/api/addMeeting', async (req, res) => {
-  try {
-    const { name, email, password, meetingName, meetingDate, participants } = req.body;
-
-    // Create a new meeting object
-    const newMeeting = {
-      meetingName,
-      userName: name,
-      meetingDate,
-      participants,
-    };
-
-      testUser = await userDataModel.find({ participants });
-      console.log("TEST USER PARTICIPANT:",participants[0])
-
-    // Find the user document based on email (assuming email is unique)
-    let user = await userDataModel.findOne({ email });
-
-    // If the user exists, append the new meeting to their meetingData array
-    if (user) {
-      user.meetingData.push(newMeeting);
-    } else {
-      // If the user does not exist, create a new user document with the meetingData array
-      user = new userDataModel({
-        name,
-        email,
-        password,
-        meetingData: [newMeeting], // Create an array with the new meeting
-      });
-    }
-
-    await user.save();
-
-    // You can optionally send a response back to the client
-    res.status(201).json(newMeeting);
-  } catch (error) {
-    console.error('Error saving meeting data:', error);
-    res.status(500).json({ error: 'Error saving meeting data.' });
-  }
-});
-*/
-
 app.post('/api/addMeeting', async (req, res) => {
   try {
     const { name, email, password, meetingName, meetingDate, participants } = req.body;
@@ -184,7 +137,7 @@ app.post('/api/addMeeting', async (req, res) => {
 
 
 
-// Add this endpoint to the server code
+
 app.get('/api/meetings', async (req, res) => {
   try {
     const { email } = req.query;
@@ -230,7 +183,6 @@ app.post('/updateParticipantName', async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-
     // Find the correct meetingData and add the participant
     const meetingIndex = user.meetingData.findIndex(
       (meeting) => meeting.meetingName === participantNames.meetingName
