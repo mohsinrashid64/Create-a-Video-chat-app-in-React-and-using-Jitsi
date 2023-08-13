@@ -4,7 +4,6 @@ import axios from 'axios';
 import Jitsi from "react-jitsi";
 import { useLocation } from 'react-router';
 import React, { useState, useEffect } from 'react';
-
 import Form from "./Form"
 import List from "./List"
 
@@ -31,8 +30,7 @@ function App () {
 
   useEffect(() => {
     if (_name) {
-      setParticipants([_name]); // Set _name in participants state
-
+      setParticipants([_name]); 
     }
   }, []);
 

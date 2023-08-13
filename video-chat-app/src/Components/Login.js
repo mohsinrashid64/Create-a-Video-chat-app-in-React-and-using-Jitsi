@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Input from './Input';
 
 export default function Login() {
   const [values, setValues] = useState({
@@ -47,27 +46,29 @@ export default function Login() {
         <div className="card-body">
           <h2 className="card-title text-center mb-4">Log In</h2>
           <form onSubmit={handleSubmit}>
-            <Input
-              label="Email"
-              type="email"
-              className="form-control"
-              id="email"
-              name="email" // Specify the name attribute
-              value={values.email}
-              onChange={onChange}
-            />
-            <br/>
-            <Input
-              label="Password"
-              type="password"
-              className="form-control mb-6"
-              id="password"
-              name="password" // Specify the name attribute
-              value={values.password}
-              onChange={onChange}
-            />
-            <br/>
-            <button type="submit" className="btn btn-primary btn-block mt-6 w-100">
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email" // Specify the name attribute
+                value={values.email}
+                onChange={onChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">Password</label>
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                name="password" // Specify the name attribute
+                value={values.password}
+                onChange={onChange}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary btn-block mt-3 w-100">
               Log in
             </button>
             <div className="text-center mt-3">

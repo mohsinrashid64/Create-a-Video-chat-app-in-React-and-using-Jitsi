@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import Validation from './SignupValidation';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Input from './Input';
 
 export default function Signup() {
   const [values, setValues] = useState({
@@ -45,39 +44,42 @@ export default function Signup() {
         <div className="card-body">
           <h2 className="card-title text-center mb-4">Sign Up</h2>
           <form onSubmit={handleSubmit}>
-            <Input
-              label="Name"
-              type="text"
-              id="name"
-              name="name"
-              value={values.name}
-              onChange={handleInput}
-              className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-            />
-            <br/>
-            {errors.name && <span className="invalid-feedback">{errors.name}</span>}
-            <Input
-              label="Email"
-              type="email"
-              id="email"
-              name="email"
-              value={values.email}
-              onChange={handleInput}
-              className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-            />
-            <br/>
-            {errors.email && <span className="invalid-feedback">{errors.email}</span>}
-            <Input
-              label="Password"
-              type="password"
-              id="password"
-              name="password"
-              value={values.password}
-              onChange={handleInput}
-              className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-            />
-            <br/>
-            {errors.password && <span className="invalid-feedback">{errors.password}</span>}
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label">Name</label>
+              <input
+                type="text"
+                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                id="name"
+                name="name"
+                value={values.name}
+                onChange={handleInput}
+              />
+              {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+            </div>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">Email</label>
+              <input
+                type="email"
+                className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                id="email"
+                name="email"
+                value={values.email}
+                onChange={handleInput}
+              />
+              {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+            </div>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">Password</label>
+              <input
+                type="password"
+                className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                id="password"
+                name="password"
+                value={values.password}
+                onChange={handleInput}
+              />
+              {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+            </div>
             <button type="submit" className="btn btn-primary btn-block w-100">
               Sign Up
             </button>
@@ -85,7 +87,6 @@ export default function Signup() {
               <Link to="/" className="btn btn-link">
                 <p className="mb-0">Already have an account?</p>
               </Link>
-              {/* Add a link to the login page here */}
             </div>
           </form>
         </div>
