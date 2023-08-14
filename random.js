@@ -1,5 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import axios from 'axios';
+
 import { useLocation } from 'react-router';
 import React, { useState, useEffect } from 'react';
 import Form from "./Form"
@@ -18,11 +20,7 @@ function App () {
   const [meetingTime, setMeetingTime] = useState('');
   const [participant, setParticipant] = useState('');
   const [participants, setParticipants] = useState([]);
-  const [meetings, setMeetings] = useState([]);
-  const [editedMeetingIndex, setEditedMeetingIndex] = useState(null);
   const [callIsActive, setCallIsActive] = useState(false);
-
-
   const [names, setNames] = useState([]);
   const [meetingData, setMeetingData] = useState([]);
 
@@ -31,6 +29,10 @@ function App () {
       setParticipants([_name]); 
     }
   }, []);
+
+  useEffect(() => {
+    console.log("PARTICIPANTS:", participants);
+  }, [participants]);
 
   // Function to fetch names from the backend
   const fetchNames = () => {
@@ -98,68 +100,12 @@ function App () {
     setParticipant(_name);
   };
 
-  const handleAddMeeting = async () => {
-    if (!meetingName || !userName || !meetingDate || !meetingTime || participants.length === 0) {
-      alert('Please fill in all the details and add at least one participant before adding a meeting.');
-      return;
-    }
-
-    const newMeeting = {
-      email : _email,
-      meetingName,
-      userName,
-      meetingDate: meetingDate + ' ' + meetingTime, 
-      participants,
-    };
-
-    if (editedMeetingIndex !== null) {
-      const updatedMeetings = [...meetings];
-      updatedMeetings[editedMeetingIndex] = newMeeting;
-      setMeetings(updatedMeetings);
-    } else {
-      setMeetings([...meetings, newMeeting]);
-    }
-
-    axios
-    .post('/api/addMeeting', newMeeting)
-    .then((response) => {
-      console.log('Server response:', response.data);
-      // After successful addition, fetch updated meeting data
-      fetchMeetingData();
-    })
-    .catch((error) => {
-      console.error('Error sending meeting data to the server:', error);
-    })
-    .finally(() => {
-      // Reset other form fields and state variables
-      setMeetingName('');
-      setUserName('');
-      setMeetingDate('');
-      setMeetingTime('');
-      setParticipants([]);
-      setEditedMeetingIndex(null);
-      setShowForm(false);
-    });
-  };
 
 
-  const handleEditMeeting = (index) => {
-    const meetingToEdit = meetings[index];
-    setMeetingName(meetingToEdit.meetingName);
-    setUserName(meetingToEdit.userName);
-    setMeetingDate(meetingToEdit.meetingDate);
-    setParticipants(meetingToEdit.participants);
-    setEditedMeetingIndex(index);
-    setShowForm(true);
-  };
+
   return (
     <div>
-      
-    
     <div className="container mt-5">
-      
-      {console.log("NAME",_name)}
-      {showForm && !callIsActive ? (
         <div className="mb-4">
           <Form
             _name={_name}
@@ -172,36 +118,13 @@ function App () {
             handleAddParticipant={handleAddParticipant}
             handleAddMeeting={handleAddMeeting}
             setShowForm ={setShowForm}
-            participants={participants}
+            participants
           />
         </div>
-      ) : !callIsActive ? (
-        <div>
-          {/* <h3 className="text-center mb-4">Video Chat App</h3> */}
-
-          <List
-            meetingData={meetingData}
-            handleEditMeeting={handleEditMeeting}
-            setCallIsActive={setCallIsActive}
-          />
-
-          <div className="d-flex justify-content-center align-items-center mt-4 mb-6">
-            <button
-              className="btn btn-primary btn-lg rounded-circle"
-              onClick={() => setShowForm(true)}
-            >
-              <span className="plus">+</span>
-            </button>
-            {/* <p className="ms-2 mb-0">Add Meeting</p> */}
-          </div>
-        </div>
-      ) : null}
     </div>
     </div>
   );
   
 }
-
-
 
 export default App;
