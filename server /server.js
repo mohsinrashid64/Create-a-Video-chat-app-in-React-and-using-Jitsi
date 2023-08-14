@@ -24,8 +24,16 @@ connection.once('open', () => {
 // Define the Mongoose schema and model
 const userDataSchema = new mongoose.Schema({
   name: String,
-  email: String,
-  password: String,
+  email: {
+    type: String,
+    required: true,
+    max: 50,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
   meetingName: String,
 
   meetingData: [Object],
@@ -33,7 +41,7 @@ const userDataSchema = new mongoose.Schema({
 
 const userDataModel = mongoose.model('UserData', userDataSchema);
 
-app.post('/getsignupdetails', async (req, res) => {
+app.post('/api/postsignupdetails', async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -52,7 +60,7 @@ app.post('/getsignupdetails', async (req, res) => {
   }
 });
 
-app.post('/getlogindetails', async (req, res) => {
+app.post('/api/postlogindetails', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await userDataModel.findOne({ email, password });
@@ -68,33 +76,6 @@ app.post('/getlogindetails', async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
-app.post('/updateParticipantName', async (req, res) => {
-  const { participantNames, name } = req.body;
-  try {
-    const user = await userDataModel.findOne({ name });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    user.participantNames.push(participantNames);
-    await user.save();
-    res.status(200).json({ message: 'Participant name added successfully', user });
-  } catch (error) {
-    console.error('Error occurred while updating participant name:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-app.get('/api/names', async (req, res) => {
-  try {
-    const names = await userDataModel.find({}, 'name');
-    res.json(names);
-  } catch (error) {
-    console.error('Error fetching names:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
 
 
 app.post('/api/addMeeting', async (req, res) => {
@@ -113,18 +94,12 @@ app.post('/api/addMeeting', async (req, res) => {
     for (let i = 0; i < participants.length; i++) {
       const participantName = participants[i];
       let user = await userDataModel.findOne({ name: participantName });
-
       if (user) {
         user.meetingData.push(newMeeting);
         await user.save(); // Save the updated user document
-      } else {
-        // If the user does not exist, create a new user document with the meetingData array
-        user = new userDataModel({
-          name: participantName,
-          meetingData: [newMeeting], // Create an array with the new meeting
-        });
-        await user.save(); // Save the new user document
-      }
+      } 
+      await user.save(); // Save the new user document
+  
     }
 
     // You can optionally send a response back to the client
@@ -132,26 +107,6 @@ app.post('/api/addMeeting', async (req, res) => {
   } catch (error) {
     console.error('Error saving meeting data:', error);
     res.status(500).json({ error: 'Error saving meeting data.' });
-  }
-});
-
-
-
-
-app.get('/api/meetings', async (req, res) => {
-  try {
-    const { email } = req.query;
-    const user = await userDataModel.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const meetings = user.meetingData;
-    res.status(200).json(meetings);
-  } catch (error) {
-    console.error('Error fetching meetings:', error);
-    res.status(500).json({ error: 'Error fetching meetings.' });
   }
 });
 
@@ -175,33 +130,15 @@ app.get('/api/meetingData', async (req, res) => {
   }
 });
 
-
-app.post('/updateParticipantName', async (req, res) => {
-  const { participantNames, email } = req.body; // Changed name to participantNames
+app.get('/api/names', async (req, res) => {
   try {
-    const user = await userDataModel.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    // Find the correct meetingData and add the participant
-    const meetingIndex = user.meetingData.findIndex(
-      (meeting) => meeting.meetingName === participantNames.meetingName
-    );
-    if (meetingIndex !== -1) {
-      user.meetingData[meetingIndex].participants.push(participantNames);
-    } else {
-      return res.status(404).json({ error: 'Meeting not found' });
-    }
-
-    await user.save();
-    res.status(200).json({ message: 'Participant added successfully', user });
+    const names = await userDataModel.find({}, 'name');
+    res.json(names);
   } catch (error) {
-    console.error('Error occurred while updating participant name:', error);
+    console.error('Error fetching names:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

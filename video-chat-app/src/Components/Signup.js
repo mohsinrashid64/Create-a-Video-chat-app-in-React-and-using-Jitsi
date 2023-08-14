@@ -24,7 +24,7 @@ export default function Signup() {
     setErrors(validationErrors);
 
     try {
-      const response = await axios.post('/getsignupdetails', values, {
+      const response = await axios.post('/api/postsignupdetails', values, {
         headers: {
           'Content-Type': 'application/json',
         },

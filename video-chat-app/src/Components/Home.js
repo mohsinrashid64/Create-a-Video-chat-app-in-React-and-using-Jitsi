@@ -1,5 +1,4 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 import axios from 'axios';
 import Jitsi from "react-jitsi";
 import { useLocation } from 'react-router';
@@ -201,6 +200,7 @@ function App () {
             handleAddParticipant={handleAddParticipant}
             handleAddMeeting={handleAddMeeting}
             setShowForm ={setShowForm}
+            participants={participants}
           />
         </div>
       ) : !callIsActive ? (

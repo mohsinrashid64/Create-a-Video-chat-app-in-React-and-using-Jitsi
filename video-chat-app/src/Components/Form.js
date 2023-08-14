@@ -1,15 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 function Form(props) {
-  const excludedName = 'NameToExclude'; // Replace with the name you want to exclude
-  const [addedParticipants, setAddedParticipants] = useState([]);
-
-  const handleAddParticipant = () => {
-    const selectedName = document.getElementById('participantSelect').value;
-    if (selectedName && !addedParticipants.includes(selectedName)) {
-      setAddedParticipants([...addedParticipants, selectedName]);
-    }
-  };
+  const excludedName = props._name; // Replace with the name you want to exclude
 
   return (
     <div className="container d-flex flex-column align-items-center justify-content-center vh-100">
@@ -87,20 +79,20 @@ function Form(props) {
               ) : (
                 <p className="m-0">No names to display. Click the button to fetch names.</p>
               )}
-              <button className="btn btn-primary ml-2" type="button" onClick={handleAddParticipant}>
+              <button className="btn btn-primary ml-5" type="button" onClick={props.handleAddParticipant}>
                 Add Participant
               </button>
             </div>
-            {addedParticipants.length > 0 && (
-              <div className="mt-3 bg-light p-3 rounded">
-                <p className="mb-1"><b>Added Participants:</b></p>
-                <ul className="list-unstyled">
-                  {addedParticipants.map((participant, index) => (
-                    <li key={index} className="mb-2">{participant}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          </div>
+
+          {/* Display added participants */}
+          <div className="form-group">
+            <label>Added Participants:</label>
+            <ul className="list-group">
+              {props.participants.map((participant, index) => (
+                <li key={index} className="list-group-item list-group-item-light">{participant}</li>
+              ))}
+            </ul>
           </div>
 
           <button type="button" className="btn btn-primary mt-3" onClick={props.handleAddMeeting}>

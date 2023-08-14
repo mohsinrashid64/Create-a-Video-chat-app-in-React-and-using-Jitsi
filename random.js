@@ -1,94 +1,207 @@
-return (
-    <div className="container d-flex flex-column align-items-center justify-content-center vh-100">
-      <h1>{props.email}</h1>
-      <button className="btn btn-primary btn-lg rounded-circle mb-3" onClick={() => setShowForm(!showForm)}>
-        <span className="plus">+</span>
-      </button>
-      {showForm ? (
-        <form>
-           <div className="form-group">
-            <label htmlFor="userName">Your Name:</label>
-            <input
-              type="text"
-              className="form-control"
-              id="userName"
-              value={userName}
-              onChange={handleUserNameChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="meetingName">Meeting Name:</label>
-            <input
-              type="text"
-              className="form-control"
-              id="meetingName"
-              value={meetingName}
-              onChange={handleMeetingNameChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="meetingDate">Date of Meeting:</label>
-            <input
-              type="date"
-              className="form-control"
-              id="meetingDate"
-              value={meetingDate}
-              onChange={handleMeetingDateChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="meetingTime">Time of Meeting:</label>
-            <input
-              type="time"
-              className="form-control"
-              id="meetingTime"
-              value={meetingTime}
-              onChange={handleMeetingTimeChange}
-            />
-          </div>
-          <div className="form-group">
-            <div className="input-group mb-3">
-              {names.length > 0 ? (
-                <div>
-                  <label>
-                    Select a name:
-                    <select onChange={handleParticipantChange}>
-                      <option value="">Select a name</option>
-                      {names.map((name) => (
-                        <option key={name._id} value={name.name}>
-                          {name.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
- 
-                </div>
-              ) : (
-                <p>No names to display. Click the button to fetch names.</p>
-              )}
-              <div className="input-group-append">
-                <button className="btn btn-primary" type="button" onClick={handleAddParticipant}>
-                  Add Participant
-                </button>
-              </div>
-            </div>
-          </div>
-          <button type="button" className="btn btn-primary" onClick={handleAddMeeting}>
-            {editedMeetingIndex !== null ? 'Save Changes' : 'Add Meeting'}
-          </button>
-        </form>
-      ) : (
-        <div>
-          <div className="label h5">Create Meeting</div>
-          {meetingData.length > 0 && (
-            <div className="mt-5">
-              <h3>Meetings Added:</h3>
-              <table className="table table-bordered">
-                {/* ... Your table JSX ... */}
-              </table>
-            </div>
-          )}
+import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
+import { useLocation } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import Form from "./Form"
+import List from "./List"
+
+
+function App () {
+
+  const location = useLocation();
+  const _name = location.state?._name || '';
+  const _email = location.state?._email || '';
+  const [showForm, setShowForm] = useState(false);
+  const [meetingName, setMeetingName] = useState('');
+  const [userName, setUserName] = useState('');
+  const [meetingDate, setMeetingDate] = useState('');
+  const [meetingTime, setMeetingTime] = useState('');
+  const [participant, setParticipant] = useState('');
+  const [participants, setParticipants] = useState([]);
+  const [meetings, setMeetings] = useState([]);
+  const [editedMeetingIndex, setEditedMeetingIndex] = useState(null);
+  const [callIsActive, setCallIsActive] = useState(false);
+
+
+  const [names, setNames] = useState([]);
+  const [meetingData, setMeetingData] = useState([]);
+
+  useEffect(() => {
+    if (_name) {
+      setParticipants([_name]); 
+    }
+  }, []);
+
+  // Function to fetch names from the backend
+  const fetchNames = () => {
+    axios
+      .get('/api/names')
+      .then((response) => {
+        setNames(response.data); // Update the names state with the fetched data
+      })
+      .catch((error) => {
+        console.error('Error fetching names:', error);
+      });
+  };
+
+  useEffect(() => {
+    fetchNames();
+  }, []);
+
+  // Fetch names from the server
+  const fetchMeetingData = () => {
+    axios
+      .get('/api/meetingData', {
+        params: {
+          email: _email,
+        },
+      })
+      .then((response) => {
+        console.log("response.data",response.data)
+        setMeetingData(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching meeting data:', error);
+      });
+  };
+
+  useEffect(() => {
+    fetchMeetingData();
+  }, []); 
+
+  const handleMeetingNameChange = (event) => {
+    setMeetingName(event.target.value);
+  };
+
+  const handleUserNameChange = (event) => {
+    setUserName(event.target.value);
+  };
+
+  const handleMeetingDateChange = (event) => {
+    setMeetingDate(event.target.value);
+  };
+
+  const handleMeetingTimeChange = (event) => {
+    setMeetingTime(event.target.value);
+  };
+
+  const handleParticipantChange = (event) => {
+    setParticipant(event.target.value);
+  };
+
+  const handleAddParticipant = async () => {
+    if (participant.trim() === '') {
+      alert('Please enter a valid participant name.');
+      return;
+    }
+    setParticipants([...participants, participant]);
+    setParticipant(_name);
+  };
+
+  const handleAddMeeting = async () => {
+    if (!meetingName || !userName || !meetingDate || !meetingTime || participants.length === 0) {
+      alert('Please fill in all the details and add at least one participant before adding a meeting.');
+      return;
+    }
+
+    const newMeeting = {
+      email : _email,
+      meetingName,
+      userName,
+      meetingDate: meetingDate + ' ' + meetingTime, 
+      participants,
+    };
+
+    if (editedMeetingIndex !== null) {
+      const updatedMeetings = [...meetings];
+      updatedMeetings[editedMeetingIndex] = newMeeting;
+      setMeetings(updatedMeetings);
+    } else {
+      setMeetings([...meetings, newMeeting]);
+    }
+
+    axios
+    .post('/api/addMeeting', newMeeting)
+    .then((response) => {
+      console.log('Server response:', response.data);
+      // After successful addition, fetch updated meeting data
+      fetchMeetingData();
+    })
+    .catch((error) => {
+      console.error('Error sending meeting data to the server:', error);
+    })
+    .finally(() => {
+      // Reset other form fields and state variables
+      setMeetingName('');
+      setUserName('');
+      setMeetingDate('');
+      setMeetingTime('');
+      setParticipants([]);
+      setEditedMeetingIndex(null);
+      setShowForm(false);
+    });
+  };
+
+
+  const handleEditMeeting = (index) => {
+    const meetingToEdit = meetings[index];
+    setMeetingName(meetingToEdit.meetingName);
+    setUserName(meetingToEdit.userName);
+    setMeetingDate(meetingToEdit.meetingDate);
+    setParticipants(meetingToEdit.participants);
+    setEditedMeetingIndex(index);
+    setShowForm(true);
+  };
+  return (
+    <div>
+      
+    
+    <div className="container mt-5">
+      
+      {console.log("NAME",_name)}
+      {showForm && !callIsActive ? (
+        <div className="mb-4">
+          <Form
+            _name={_name}
+            names={names}
+            handleUserNameChange={handleUserNameChange}
+            handleMeetingNameChange={handleMeetingNameChange}
+            handleMeetingDateChange={handleMeetingDateChange}
+            handleMeetingTimeChange={handleMeetingTimeChange}
+            handleParticipantChange={handleParticipantChange}
+            handleAddParticipant={handleAddParticipant}
+            handleAddMeeting={handleAddMeeting}
+            setShowForm ={setShowForm}
+            participants={participants}
+          />
         </div>
-      )}
+      ) : !callIsActive ? (
+        <div>
+          {/* <h3 className="text-center mb-4">Video Chat App</h3> */}
+
+          <List
+            meetingData={meetingData}
+            handleEditMeeting={handleEditMeeting}
+            setCallIsActive={setCallIsActive}
+          />
+
+          <div className="d-flex justify-content-center align-items-center mt-4 mb-6">
+            <button
+              className="btn btn-primary btn-lg rounded-circle"
+              onClick={() => setShowForm(true)}
+            >
+              <span className="plus">+</span>
+            </button>
+            {/* <p className="ms-2 mb-0">Add Meeting</p> */}
+          </div>
+        </div>
+      ) : null}
+    </div>
     </div>
   );
+  
+}
+
+
+
+export default App;

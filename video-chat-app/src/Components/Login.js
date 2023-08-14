@@ -21,7 +21,7 @@ export default function Login() {
 
     try {
       console.log("Login button try Part")
-      const response = await axios.post('/getlogindetails', values, {
+      const response = await axios.post('/api/postlogindetails', values, {
         headers: {
           'Content-Type': 'application/json'
         }
